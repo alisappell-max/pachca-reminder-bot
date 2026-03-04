@@ -1,0 +1,27 @@
+name: Напоминания в Пачку
+
+on:
+  schedule:
+    - cron: '0 13 * * 1-5'
+    - cron: '50 14 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Напоминание 16:00
+        if: ${{ github.event.schedule == '0 13 * * 1-5' }}
+        run: |
+          curl -X POST https://api.pachca.com/api/shared/v1/messages \
+          -H "Authorization: Bearer ${{ secrets.PACHCA_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{"message": {"entity_type": "discussion", "entity_id": 34808758, "content": "👋 Привет! Ты сейчас на БЗ?"}}'
+
+      - name: Напоминание 17:50
+        if: ${{ github.event.schedule == '50 14 * * 1-5' }}
+        run: |
+          curl -X POST https://api.pachca.com/api/shared/v1/messages \
+          -H "Authorization: Bearer ${{ secrets.PACHCA_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d '{"message": {"entity_type": "discussion", "entity_id": 34808758, "content": "📝 Что было сделано сегодня?"}}'
